@@ -4,42 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-   
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </head>
 <body>
 
-<div style="width: fit-content;height: fit-content;">
-  <canvas id="myChart"></canvas>
+<div style="width: fit-content; height: 300px;">
+  <div class="col"> <canvas id="red_chart" style="width: 500px; height: 400px;"></canvas> </div>
+  <hr/>
+  <div class="col"> <canvas id="green_chart" style="width: 500px; height: 400px;"></canvas> </div>
+  <hr/>
+  <div class="col"> <canvas id="blue_chart" style="width: 500px; height: 400px;"></canvas> </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('myChart');
-    ctx.style.width = "500px";
-    ctx.style.height = "400px";
+    const red_chart = document.getElementById('red_chart');
+    const green_chart = document.getElementById('green_chart');
+    const blue_chart = document.getElementById('blue_chart');
+
     var r_channel_data = [];
     var g_channel_data= [];
     var b_channel_data= [];
 
-  function loadChart(){
+  function loadRedChart(){
     var labels = ["X","Y"];
     const data = {
-    label:labels,
-    datasets: [{
-      label: 'DN(r)',
-      data: r_channel_data,
-      backgroundColor: 'red'
-    },{
-      label: 'DN(g)',
-      data: g_channel_data,
-      backgroundColor: 'green'
-    },{
-      label: 'DN(b)',
-      data: b_channel_data,
-      backgroundColor: 'blue'
-    }]
+      label:labels,
+      datasets: [{
+        label: 'DN(r)',
+        data: r_channel_data,
+        backgroundColor: 'red'
+      }]
     };
 
-    new Chart(ctx, {
+    new Chart(red_chart, {
       type: 'scatter',
       data: data,
       options :{
@@ -48,16 +45,88 @@
             display: true,
             title: {
               display: true,
-              text: 'DN',
-              color: 'red'
+              text: 'red DN values',
+
             }
           },
           y: {
             display: true,
             title: {
               display: true,
-              text: 'MC',
-              color: 'green'
+              text: 'MC values (%)',
+
+            }
+          } 
+        }
+      }
+      
+    });
+  }
+
+  function loadGreenChart(){
+    var labels = ["X","Y"];
+    const data = {
+      label:labels,
+      datasets: [{
+        label: 'DN(g)',
+        data: g_channel_data,
+        backgroundColor: 'green'
+      }]
+    };
+
+    new Chart(green_chart, {
+      type: 'scatter',
+      data: data,
+      options :{
+        scales: {
+          x: {
+            display: true,
+            title: {
+              display: true,
+              text: 'green DN values',
+            }
+          },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: 'MC values (%)',
+            }
+          } 
+        }
+      }
+      
+    });
+  }
+
+  function loadBlueChart(){
+    var labels = ["X","Y"];
+    const data = {
+      label:labels,
+      datasets: [{
+        label: 'DN(b)',
+        data: b_channel_data,
+        backgroundColor: 'blue'
+      }]
+    };
+
+    new Chart(blue_chart, {
+      type: 'scatter',
+      data: data,
+      options :{
+        scales: {
+          x: {
+            display: true,
+            title: {
+              display: true,
+              text: 'blue DN values',
+            }
+          },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: 'MC values (%)',
             }
           } 
         }
@@ -86,7 +155,9 @@
                 b_channel_data.push(b_coordinates);
                 
              }
-             loadChart();
+             loadRedChart();
+             loadGreenChart();
+             loadBlueChart()
          }else{
  
          }      
