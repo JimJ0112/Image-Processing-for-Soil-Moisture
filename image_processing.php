@@ -1,4 +1,11 @@
 <?php
+
+    header('Access-Control-Allow-Origin: *');
+
+    header('Access-Control-Allow-Methods: GET, POST');
+
+    header("Access-Control-Allow-Headers: X-Requested-With");
+
     $training_set_limit = 24;
     $csvFile = file('mc_values_soil.csv');
     $mc_values_data = [];
@@ -13,16 +20,6 @@
     for($i = 1; $i<=24; $i++){
         $image_url = "image_samples/".$mc_values_data[$i][0];
         $rgb_values = get_mean_of_rgb($image_url);
-
-        //print_r($rgb_values);
-        /*
-        $image = imagecreatefromjpeg($image_url);
-        $rgb = imagecolorat($image, 10, 15);
-        $r = ($rgb >> 16) & 0xFF;
-        $g = ($rgb >> 8) & 0xFF;
-        $b = $rgb & 0xFF;
-        */
-
         
         $temp_array = array(
             'image'=> $mc_values_data[$i][0],
@@ -37,7 +34,9 @@
         
     }
 
-    
+    echo json_encode($rgbvalues);
+
+    /*
     echo"<table>";
     echo"<thead>";
     echo"<tr>";
@@ -66,7 +65,7 @@
     }
 
     echo"</tbody>";
-    
+    */
 
 function get_mean_of_rgb($image_url){
 
@@ -83,7 +82,6 @@ function get_mean_of_rgb($image_url){
         for($y=0;$y<$height;$y++){
             $rgb = imagecolorat($image, $x, $y);
             $r[$x] = ($rgb >> 16) & 0xFF;
-            
             $g[$x] = ($rgb >> 8) & 0xFF;
             $b[$x] = $rgb & 0xFF;
         }

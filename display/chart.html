@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+   
+</head>
+<body>
+
+<div style="width: fit-content;height: fit-content;">
+  <canvas id="myChart"></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('myChart');
+    ctx.style.width = "500px";
+    ctx.style.height = "400px";
+    var r_channel_data = [];
+    var g_channel_data= [];
+    var b_channel_data= [];
+
+  function loadChart(){
+    var labels = ["X","Y"];
+    const data = {
+    label:labels,
+    datasets: [{
+      label: 'DN(r)',
+      data: r_channel_data,
+      backgroundColor: 'red'
+    },{
+      label: 'DN(g)',
+      data: g_channel_data,
+      backgroundColor: 'green'
+    },{
+      label: 'DN(b)',
+      data: b_channel_data,
+      backgroundColor: 'blue'
+    }]
+    };
+
+    new Chart(ctx, {
+      type: 'scatter',
+      data: data,
+      options :{
+        scales: {
+          x: {
+            display: true,
+            title: {
+              display: true,
+              text: 'DN',
+              color: 'red'
+            }
+          },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: 'MC',
+              color: 'green'
+            }
+          } 
+        }
+      }
+      
+    });
+  }
+
+
+  function getImageProcessingResults() {
+     
+     var xmlhttp = new XMLHttpRequest();
+ 
+     xmlhttp.onload = function() {
+         if (this.readyState === 4 || this.status === 200){ 
+             var dataArray = this.response;
+             dataArray = JSON.parse(dataArray);
+             var dataArrayLength = Object.keys(dataArray).length;
+             for(var i=1; i< dataArrayLength; i++){
+                var r_coordinates = {'x':dataArray[i]['r'],'y':dataArray[i]['mc']}
+                var g_coordinates = {'x':dataArray[i]['g'],'y':dataArray[i]['mc']}
+                var b_coordinates = {'x':dataArray[i]['b'],'y':dataArray[i]['mc']}
+                
+                r_channel_data.push(r_coordinates);
+                g_channel_data.push(g_coordinates);
+                b_channel_data.push(b_coordinates);
+                
+             }
+             loadChart();
+         }else{
+ 
+         }      
+     };
+     xmlhttp.open("POST", "http://localhost/image-processing-for-soil-moisture/image_processing.php", true);
+     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+     xmlhttp.send();
+     
+  }// end of function
+  getImageProcessingResults();
+ 
+
+</script>
+
+</body>
+</html>
