@@ -146,9 +146,9 @@
              dataArray = JSON.parse(dataArray);
              var dataArrayLength = Object.keys(dataArray).length;
              for(var i=1; i< dataArrayLength; i++){
-                var r_coordinates = {'x':dataArray[i]['r'],'y':dataArray[i]['mc']}
-                var g_coordinates = {'x':dataArray[i]['g'],'y':dataArray[i]['mc']}
-                var b_coordinates = {'x':dataArray[i]['b'],'y':dataArray[i]['mc']}
+                var r_coordinates = {'x':dataArray[i]['r'],'y':dataArray[i]['mc'],'Image':dataArray[i]['image']}
+                var g_coordinates = {'x':dataArray[i]['g'],'y':dataArray[i]['mc'],'Image':dataArray[i]['image']}
+                var b_coordinates = {'x':dataArray[i]['b'],'y':dataArray[i]['mc'],'Image':dataArray[i]['image']}
                 
                 r_channel_data.push(r_coordinates);
                 g_channel_data.push(g_coordinates);
@@ -162,7 +162,7 @@
  
          }      
      };
-     xmlhttp.open("POST", "http://localhost/image-processing-for-soil-moisture/image_processing.php", true);
+     xmlhttp.open("POST", "http://localhost/image-processing-for-soil-moisture-main/image_processing.php", true);
      xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
      xmlhttp.send();
      
