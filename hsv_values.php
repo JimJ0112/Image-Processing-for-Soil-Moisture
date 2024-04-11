@@ -6,7 +6,7 @@ header('Access-Control-Allow-Methods: GET, POST');
 
 header("Access-Control-Allow-Headers: X-Requested-With");
 
-$training_set_limit = 24;
+$training_set_limit = 30;
 $csvFile = file('mc_values_soil.csv');
 $mc_values_data = [];
 foreach ($csvFile as $line) {
@@ -15,7 +15,7 @@ foreach ($csvFile as $line) {
 
 $hsv_values = array();
 // ignore data[0] as it only contains table headers
-for ($i = 1; $i <= 24; $i++) {
+for ($i = 1; $i <= $training_set_limit; $i++) {
 
     $image_url = "image_samples/" . $mc_values_data[$i][0];
     $hsv_result = get_mean_of_hsv($image_url);
@@ -82,16 +82,6 @@ function get_mean_of_hsv($image_url)
             $b = $rgb & 0xFF;
 
             $hsv = RGBtoHSV($r, $g, $b);
-
-            /*
-            echo $image_url . " <br/>";
-            echo "R" . $r . "<br/>";
-            echo "G" . $g . "<br/>";
-            echo "B" . $b . "<br/>";
-
-            print_r($hsv);
-            echo "<br/>";
-            */
 
             $h[$x] = $hsv['H'];
             $s[$x] = $hsv['S'];
