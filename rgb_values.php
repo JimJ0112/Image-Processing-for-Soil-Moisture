@@ -6,7 +6,7 @@ header('Access-Control-Allow-Methods: GET, POST');
 
 header("Access-Control-Allow-Headers: X-Requested-With");
 
-$training_set_limit = 30;
+$training_set_limit = 94;
 $csvFile = file('mc_values_soil.csv');
 $mc_values_data = [];
 foreach ($csvFile as $line) {
