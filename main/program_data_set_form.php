@@ -160,7 +160,6 @@ function display_dataset_checkboxes($dataset)
                     </tbody>
 
                 </table>
-
                 <input type="submit" value="Submit" class="btn btn-primary" style="float: right;">
             </form>
 
