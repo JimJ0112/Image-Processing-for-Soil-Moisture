@@ -15,7 +15,11 @@ require "../vendor/autoload.php";
 
 
 if (isset($_POST['color_space'])) {
-    $csvFile = file('datasets/data_set/data_set.csv');
+    //$csvFile = file('datasets/data_set/data_set.csv');
+
+    $filepath = glob('datasets/data_set/data_set.*');
+    //print_r($filepath);
+    $csvFile = file($filepath[0]);
     $mc_values_data = [];
     foreach ($csvFile as $line) {
         $mc_values_data[] = str_getcsv($line);
