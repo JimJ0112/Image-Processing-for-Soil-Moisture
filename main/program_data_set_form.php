@@ -36,6 +36,7 @@ if (isset($_POST['color_space'])) {
             break;
 
         case 3:
+            $dn_results = get_YCbCr_values($mc_values_data);
             break;
     }
 }
@@ -133,6 +134,22 @@ function display_dataset_checkboxes_hsv($dataset)
     }
 }
 
+function display_dataset_checkboxes_YCbCr($dataset)
+{
+    $iterator = 1;
+    foreach ($dataset as $data) {
+        $image = $data['image'];
+        $Y = $data['Y'];
+        $Cb = $data['Cb'];
+        $Cr = $data['Cr'];
+        $mc = $data['mc'];
+        //$input_name = $image . "_set_type";
+        $input_name = "image_set_type[$iterator]";
+        echo "<tr> <td> $image &nbsp;&nbsp; </td> <td> $Y &nbsp; &nbsp; </td> <td> $Cb &nbsp; &nbsp; </td> <td> $Cr &nbsp; &nbsp; </td> <td> $mc &nbsp; &nbsp;</td> <td> <input type='radio' class='m-auto' value='training_set' name='$input_name'></td> <td> <input type='radio' value='testing_set' class='m-auto' name='$input_name'></td></tr>";
+        $iterator++;
+    }
+}
+
 
 function get_mean_of_hsv($image_url)
 {
@@ -215,6 +232,87 @@ function get_hsv_values($mc_values_data)
 
     return $hsv_values;
 }
+
+
+function get_YCbCr_values($mc_values_data)
+{
+    $iterator = 1;
+    $training_set_limit = count($mc_values_data) - 1;
+    $YCbCr_values = array();
+    //print_r($mc_values_data);
+    for ($i = 1; $i <= $training_set_limit; $i++) {
+
+        $image_url = "images/" . $mc_values_data[$i][0];
+        $hsv_result = get_mean_of_YCbCr($image_url);
+
+        $temp_array = array(
+            'image' => $mc_values_data[$i][0],
+            'mc' => $mc_values_data[$i][1],
+            'Y' =>  $hsv_result['Y'],
+            'Cb' =>  $hsv_result['Cb'],
+            'Cr' => $hsv_result['Cr']
+        );
+        $YCbCr_values[$iterator] = $temp_array;
+        $iterator++;
+    }
+
+    return $YCbCr_values;
+}
+
+
+function get_mean_of_YCbCr($image_url)
+{
+
+    $h = array();
+    $s = array();
+    $v = array();
+
+    $image = imagecreatefromjpeg($image_url);
+    $size   = getimagesize($image_url);
+    $width  = $size[0];
+    $height = $size[1];
+
+    for ($x = 0; $x < $width; $x++) {
+        for ($y = 0; $y < $height; $y++) {
+            $rgb = imagecolorat($image, $x, $y);
+            $r = ($rgb >> 16) & 0xFF;
+            $g = ($rgb >> 8) & 0xFF;
+            $b = $rgb & 0xFF;
+
+            $hsv = RGBToYCbCr($r, $g, $b);
+
+            $Y[$x] = $hsv['Y'];
+            $Cb[$x] = $hsv['Cb'];
+            $Cr[$x] = $hsv['Cr'];
+        }
+    }
+
+
+    $average_Y = array_sum($Y) / count($Y);
+
+    $average_Cb = array_sum($Cb) / count($Cb);
+
+    $average_Cr = array_sum($Cr) / count($Cr);
+
+    return array('Y' => $average_Y, 'Cb' => $average_Cb, 'Cr' => $average_Cr);
+}
+
+
+
+
+function RGBToYCbCr($r, $g, $b)
+{
+    $fr = (float)$r / 255;
+    $fg = (float)$g / 255;
+    $fb = (float)$b / 255;
+
+
+    $Y = (float)(0.2989 * $fr + 0.5866 * $fg + 0.1145 * $fb);
+    $Cb = (float)(-0.1687 * $fr - 0.3313 * $fg + 0.5000 * $fb);
+    $Cr = (float)(0.5000 * $fr - 0.4184 * $fg - 0.0816 * $fb);
+
+    return array('Y' => $Y, 'Cb' => $Cb, 'Cr' => $Cr);
+}
 ?>
 
 <!DOCTYPE html>
@@ -254,6 +352,14 @@ function get_hsv_values($mc_values_data)
                                 <td><b>MC</b></td>
                                 <td><b>Training set</b> </td>
                                 <td><b>Testing set </b> </td>
+                            <?php } else if ((int)$color_space === 3) { ?>
+                                <td><b>Image</b></td>
+                                <td><b>DN(Y)</b></td>
+                                <td><b>DN(Cb)</b></td>
+                                <td><b>DN(Cr)</b></td>
+                                <td><b>MC</b></td>
+                                <td><b>Training set</b> </td>
+                                <td><b>Testing set </b> </td>
                             <?php } ?>
                         </tr>
                     </thead>
@@ -271,6 +377,8 @@ function get_hsv_values($mc_values_data)
                                 break;
 
                             case 3:
+                                display_dataset_checkboxes_YCbCr($dn_results);
+
                                 break;
                         }
 
