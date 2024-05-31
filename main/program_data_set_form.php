@@ -32,6 +32,7 @@ if (isset($_POST['color_space'])) {
             break;
 
         case 2:
+            $dn_results = get_hsv_values($mc_values_data);
             break;
 
         case 3:
@@ -99,7 +100,7 @@ function get_rgb_values($mc_values_data)
     return $rgbvalues;
 }
 
-function display_dataset_checkboxes($dataset)
+function display_dataset_checkboxes_rgb($dataset)
 {
     $iterator = 1;
     foreach ($dataset as $data) {
@@ -115,6 +116,105 @@ function display_dataset_checkboxes($dataset)
     }
 }
 
+
+function display_dataset_checkboxes_hsv($dataset)
+{
+    $iterator = 1;
+    foreach ($dataset as $data) {
+        $image = $data['image'];
+        $h = $data['H'];
+        $s = $data['S'];
+        $v = $data['V'];
+        $mc = $data['mc'];
+        //$input_name = $image . "_set_type";
+        $input_name = "image_set_type[$iterator]";
+        echo "<tr> <td> $image &nbsp;&nbsp; </td> <td> $h &nbsp; &nbsp; </td> <td> $s &nbsp; &nbsp; </td> <td> $v &nbsp; &nbsp; </td> <td> $mc &nbsp; &nbsp;</td> <td> <input type='radio' class='m-auto' value='training_set' name='$input_name'></td> <td> <input type='radio' value='testing_set' class='m-auto' name='$input_name'></td></tr>";
+        $iterator++;
+    }
+}
+
+
+function get_mean_of_hsv($image_url)
+{
+
+    $h = array();
+    $s = array();
+    $v = array();
+
+    $image = imagecreatefromjpeg($image_url);
+    $size   = getimagesize($image_url);
+    $width  = $size[0];
+    $height = $size[1];
+
+    for ($x = 0; $x < $width; $x++) {
+        for ($y = 0; $y < $height; $y++) {
+            $rgb = imagecolorat($image, $x, $y);
+            $r = ($rgb >> 16) & 0xFF;
+            $g = ($rgb >> 8) & 0xFF;
+            $b = $rgb & 0xFF;
+
+            $hsv = RGBtoHSV($r, $g, $b);
+
+            $h[$x] = $hsv['H'];
+            $s[$x] = $hsv['S'];
+            $v[$x] = $hsv['V'];
+        }
+    }
+
+
+    $average_h = array_sum($h) / count($h);
+
+    $average_s = array_sum($s) / count($s);
+
+    $average_v = array_sum($v) / count($v);
+
+    return array('H' => $average_h, 'S' => $average_s, 'V' => $average_v);
+}
+
+
+function RGBtoHSV($r, $g, $b)
+{
+    $r = ($r / 255);
+    $g = ($g / 255);
+    $b = ($b / 255);
+    $maxRGB = max($r, $g, $b);
+    $minRGB = min($r, $g, $b);
+    $chroma = $maxRGB - $minRGB;
+    if ($chroma == 0) return array('H' => 0, 'S' => 0, 'V' => $maxRGB);
+    if ($r == $minRGB) $h = 3 - (($g - $b) / $chroma);
+    elseif ($b == $minRGB) $h = 1 - (($r - $g) / $chroma);
+    else $h = 5 - (($b - $r) / $chroma);
+
+    $H = 60 * $h;
+    $S = ($chroma / $maxRGB) * 100;
+    $V = $maxRGB * 100;
+    return array('H' => $H, 'S' => $S, 'V' => $V);
+}
+
+function get_hsv_values($mc_values_data)
+{
+    $iterator = 1;
+    $training_set_limit = count($mc_values_data) - 1;
+    $hsv_values = array();
+    //print_r($mc_values_data);
+    for ($i = 1; $i <= $training_set_limit; $i++) {
+
+        $image_url = "images/" . $mc_values_data[$i][0];
+        $hsv_result = get_mean_of_hsv($image_url);
+
+        $temp_array = array(
+            'image' => $mc_values_data[$i][0],
+            'mc' => $mc_values_data[$i][1],
+            'H' =>  $hsv_result['H'],
+            'S' =>  $hsv_result['S'],
+            'V' => $hsv_result['V']
+        );
+        $hsv_values[$iterator] = $temp_array;
+        $iterator++;
+    }
+
+    return $hsv_values;
+}
 ?>
 
 <!DOCTYPE html>
@@ -133,6 +233,8 @@ function display_dataset_checkboxes($dataset)
         <div class="card m-auto p-2" style="width: fit-content;">
             <form action="program_predict.php" method="post">
                 <input type="hidden" name="dn_values" value='<?php echo json_encode($dn_results); ?>'>
+                <input type="hidden" name="color_space" value='<?php echo $color_space; ?>'>
+
                 <table class="text-center table">
                     <thead>
                         <tr>
@@ -156,7 +258,24 @@ function display_dataset_checkboxes($dataset)
                         </tr>
                     </thead>
                     <tbody>
-                        <?php display_dataset_checkboxes($dn_results); ?>
+                        <?php
+
+                        $color_space = $_POST['color_space'];
+                        switch ((int)$color_space) {
+                            case 1:
+                                display_dataset_checkboxes_rgb($dn_results);
+                                break;
+
+                            case 2:
+                                display_dataset_checkboxes_hsv($dn_results);
+                                break;
+
+                            case 3:
+                                break;
+                        }
+
+
+                        ?>
                     </tbody>
 
                 </table>
