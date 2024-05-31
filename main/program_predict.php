@@ -83,6 +83,8 @@ function rgb_predictions()
 
     echo ' <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">';
     $new_iterator_training = 0;
+    echo "<h3 class='m-auto w-100 text-center mt-2'> From RGB color space </h3>  <br/> <hr/> ";
+
     echo "<div class='row m-auto mt-3'>";
     echo "<div class='col text-center'>";
     echo "<h3> Training set </h3> ";
@@ -194,6 +196,9 @@ function hsv_predictions()
 
     echo ' <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">';
     $new_iterator_training = 0;
+    echo "<h3 class='m-auto w-100 text-center mt-2'> From HSV color space </h3> <br/> <hr/> ";
+
+
     echo "<div class='row m-auto mt-3'>";
     echo "<div class='col text-center'>";
     echo "<h3> Training set </h3> ";
